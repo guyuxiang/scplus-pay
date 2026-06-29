@@ -1,0 +1,11 @@
+services:
+  scplus-pay:
+    image: scplus-pay:latest
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./env:/app/.env
+    ports:
+      - "8000:8000"

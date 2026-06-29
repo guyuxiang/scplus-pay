@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en-US" data-mode="system">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="color-scheme" content="light dark">
+		<meta
+			name="theme-color"
+			content="#FFFFFF"
+			media="(prefers-color-scheme: light)"
+		>
+		<meta
+			name="theme-color"
+			content="#000000"
+			media="(prefers-color-scheme: dark)"
+		>
+
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+		<link rel="icon" href="/favicon.ico" sizes="48x48">
+		<link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+		<link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+
+		<script id="app-bootstrap-script">
+		"use strict";
+		(() => {
+			window.__splashStart = Date.now();
+
+			const root = document.documentElement;
+			let resolved = "light";
+			try {
+				const cookieValue = document.cookie
+					.split("; ")
+					.find((row) => row.startsWith("theme="))
+					?.split("=")[1];
+				const stored =
+					cookieValue === "light" ||
+					cookieValue === "dark" ||
+					cookieValue === "system"
+						? cookieValue
+						: "system";
+				const prefersDark = window.matchMedia(
+					"(prefers-color-scheme: dark)"
+				).matches;
+				if (stored === "system") {
+					resolved = prefersDark ? "dark" : "light";
+				} else {
+					resolved = stored;
+				}
+			} catch {
+				// cookie access may be blocked in some environments
+			}
+			root.dataset.mode = resolved;
+			root.style.colorScheme = resolved;
+		})();
+		</script>
+		<style id="splash-style">
+		@keyframes splash-bar {
+			0% {
+				transform: translateX(-100%);
+			}
+
+			100% {
+				transform: translateX(600%);
+			}
+		}
+
+		#splash {
+			position: fixed;
+			inset: 0;
+			z-index: 9999;
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+			align-items: center;
+			justify-content: center;
+			height: 100dvh;
+			min-height: 100vh;
+			pointer-events: none;
+			background: #fff;
+			transition: opacity 0.3s ease;
+		}
+
+		#splash img {
+			border-radius: 1.5rem;
+		}
+
+		#splash-track {
+			width: 9rem;
+			height: 0.25rem;
+			overflow: hidden;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 9999px;
+		}
+
+		#splash-bar {
+			display: block;
+			width: 1.5rem;
+			height: 100%;
+			background: #000;
+			border-radius: 9999px;
+			animation: splash-bar 0.8s ease-in-out infinite alternate;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			#splash {
+				background: #000;
+			}
+
+			#splash-track {
+				background: rgba(255, 255, 255, 0.15);
+			}
+
+			#splash-bar {
+				background: #fff;
+			}
+		}
+
+		html[data-mode="dark"] #splash {
+			background: #000;
+		}
+
+		html[data-mode="dark"] #splash-track {
+			background: rgba(255, 255, 255, 0.15);
+		}
+
+		html[data-mode="dark"] #splash-bar {
+			background: #fff;
+		}
+		</style>
+
+		<!-- Primary Meta Tags -->
+		<title>SC+Pay</title>
+		<meta name="title" content="SC+Pay">
+		<meta
+			name="description"
+			content="SC+Pay 收款管理后台 - 多链稳定币支付中间件管理面板"
+		>
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website">
+		<meta property="og:url" content="">
+		<meta property="og:title" content="SC+Pay">
+		<meta
+			property="og:description"
+			content="SC+Pay 收款管理后台 - 多链稳定币支付中间件管理面板"
+		>
+		<meta property="og:image" content="/images/logo.svg">
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:url" content="">
+		<meta name="twitter:title" content="SC+Pay">
+		<meta
+			name="twitter:description"
+			content="SC+Pay 收款管理后台 - 多链稳定币支付中间件管理面板"
+		>
+		<meta name="twitter:image" content="/images/logo.svg">
+		<script type="module" crossorigin src="/assets/index-DhgNijKi.js"></script>
+		<link rel="modulepreload" crossorigin href="/assets/chunk-DECur_0Z.js">
+		<link rel="modulepreload" crossorigin href="/assets/preload-helper-DoS0eHac.js">
+		<link rel="modulepreload" crossorigin href="/assets/clsx-D9aGYY3V.js">
+		<link rel="modulepreload" crossorigin href="/assets/messages-Bp0bCjzp.js">
+		<link rel="modulepreload" crossorigin href="/assets/react-CO2uhaBc.js">
+		<link rel="modulepreload" crossorigin href="/assets/button-BgMnOYKD.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-BFnxq45V.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-CKFLmh1A.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-B0ikDpJU.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-DGDEBCW9.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-BSXD7MjW.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-_ND6L-P3.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-Clua1vrx.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-Bmn8KNt7.js">
+		<link rel="modulepreload" crossorigin href="/assets/tooltip-Gx9CUpPD.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-BGqHIBUe.js">
+		<link rel="modulepreload" crossorigin href="/assets/with-selector-DBfssCrY.js">
+		<link rel="modulepreload" crossorigin href="/assets/cookies-BzZOQYPw.js">
+		<link rel="modulepreload" crossorigin href="/assets/auth-store-Csn6HPxJ.js">
+		<link rel="modulepreload" crossorigin href="/assets/useStore-CupyIEEP.js">
+		<link rel="modulepreload" crossorigin href="/assets/ClientOnly-fFIveJVd.js">
+		<link rel="modulepreload" crossorigin href="/assets/matchContext-BFCdcHzo.js">
+		<link rel="modulepreload" crossorigin href="/assets/useRouter-DtTm7XkK.js">
+		<link rel="modulepreload" crossorigin href="/assets/redirect-DMNGvjzO.js">
+		<link rel="modulepreload" crossorigin href="/assets/Match-Cm64cgS9.js">
+		<link rel="modulepreload" crossorigin href="/assets/link-BYG8nKNO.js">
+		<link rel="modulepreload" crossorigin href="/assets/useSearch-Diln-KYh.js">
+		<link rel="modulepreload" crossorigin href="/assets/useNavigate-7u4DX0Ho.js">
+		<link rel="modulepreload" crossorigin href="/assets/route-Bin9ihv_.js">
+		<link rel="modulepreload" crossorigin href="/assets/lazyRouteComponent-iygd3-DM.js">
+		<link rel="modulepreload" crossorigin href="/assets/useRouterState-B2FPPjEe.js">
+		<link rel="modulepreload" crossorigin href="/assets/atom-DQpaPCwp.js">
+		<link rel="modulepreload" crossorigin href="/assets/createLucideIcon-Br0Bd5k2.js">
+		<link rel="modulepreload" crossorigin href="/assets/dist-C97YBjnT.js">
+		<link rel="modulepreload" crossorigin href="/assets/wallet-Bgblr4kl.js">
+		<link rel="modulepreload" crossorigin href="/assets/epusdt-DkhuuUpL.js">
+		<link rel="modulepreload" crossorigin href="/assets/loader-circle-DpEz1fQv.js">
+		<link rel="modulepreload" crossorigin href="/assets/triangle-alert-DB5v_9sS.js">
+		<link rel="modulepreload" crossorigin href="/assets/zod-rwFXxHlg.js">
+		<link rel="modulepreload" crossorigin href="/assets/general-error-BoIfl_4Z.js">
+		<link rel="modulepreload" crossorigin href="/assets/not-found-error-CHHM1I1c.js">
+		<link rel="modulepreload" crossorigin href="/assets/_error-CeoUllM-.js">
+		<link rel="modulepreload" crossorigin href="/assets/_trade_id-BQK1SM3u.js">
+		<link rel="modulepreload" crossorigin href="/assets/router-BluvjQRz.js">
+		<link rel="modulepreload" crossorigin href="/assets/Matches-DYR79wJf.js">
+		<link rel="modulepreload" crossorigin href="/assets/font-provider-CtpKPVa7.js">
+		<link rel="modulepreload" crossorigin href="/assets/theme-provider-CyJJNAox.js">
+		<link rel="stylesheet" crossorigin href="/assets/index-CSgdIpTt.css">
+	<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+
+	<body>
+		<div id="app"></div>
+		<div id="splash">
+			<img
+				src="/images/logo.svg"
+				fetchpriority="high"
+				alt="SC+Pay"
+				width="144"
+				height="144"
+			>
+			<div id="splash-track"><span id="splash-bar"></span></div>
+		</div>
+	</body>
+</html>

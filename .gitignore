@@ -1,0 +1,12 @@
+.idea/
+src/runtime/
+src/.env
+src/*.db
+src/*.db-shm
+src/*.db-wal
+.DS_Store
+.env
+
+# build artifacts
+src/scplus-pay
+src/scplus-pay.exe

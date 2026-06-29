@@ -1,0 +1,101 @@
+name: sync-www
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - "src/www/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-www-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-sync:
+    name: Build Frontend And Sync src/www
+    runs-on: ubuntu-latest
+
+    env:
+      FRONTEND_REPOSITORY: ${{ vars.WWW_FRONTEND_REPOSITORY }}
+      FRONTEND_REF: ${{ vars.WWW_FRONTEND_REF }}
+      FRONTEND_BUILD_DIR: ${{ vars.WWW_FRONTEND_BUILD_DIR }}
+      FRONTEND_TOKEN: ${{ secrets.WWW_FRONTEND_TOKEN }}
+      WWW_TARGET_DIR: src/www
+
+    steps:
+      - name: Checkout Backend
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Validate Configuration
+        run: |
+          if [[ -z "$FRONTEND_REPOSITORY" ]]; then
+            echo "Set repository variable WWW_FRONTEND_REPOSITORY, for example owner/repo"
+            exit 1
+          fi
+          if [[ -z "$FRONTEND_REF" ]]; then
+            echo "Set repository variable WWW_FRONTEND_REF, for example main"
+            exit 1
+          fi
+          if [[ -z "$FRONTEND_BUILD_DIR" ]]; then
+            echo "Set repository variable WWW_FRONTEND_BUILD_DIR, for example dist"
+            exit 1
+          fi
+          if [[ -z "$FRONTEND_TOKEN" ]]; then
+            echo "Set repository secret WWW_FRONTEND_TOKEN to read the private frontend repository"
+            exit 1
+          fi
+
+      - name: Clone Frontend
+        run: |
+          frontend_name="${FRONTEND_REPOSITORY##*/}"
+          frontend_path="$RUNNER_TEMP/$frontend_name"
+          git clone \
+            --depth=1 \
+            --branch "$FRONTEND_REF" \
+            "https://x-access-token:${FRONTEND_TOKEN}@github.com/${FRONTEND_REPOSITORY}.git" \
+            "$frontend_path"
+
+      - name: Set Up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Build Frontend
+        run: |
+          frontend_name="${FRONTEND_REPOSITORY##*/}"
+          cd "$RUNNER_TEMP/$frontend_name"
+          bun install
+          bun run build
+
+      - name: Replace src/www
+        run: |
+          frontend_name="${FRONTEND_REPOSITORY##*/}"
+          cd "$RUNNER_TEMP/$frontend_name"
+          if [[ ! -d "$FRONTEND_BUILD_DIR" ]]; then
+            echo "Frontend build output does not exist: $FRONTEND_BUILD_DIR"
+            exit 1
+          fi
+
+          target_path="$GITHUB_WORKSPACE/$WWW_TARGET_DIR"
+          mkdir -p "$target_path"
+          rsync -a --delete "$FRONTEND_BUILD_DIR"/ "$target_path"/
+
+      - name: Commit And Push
+        run: |
+          if [[ -z "$(git status --porcelain -- "$WWW_TARGET_DIR")" ]]; then
+            echo "src/www is already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$WWW_TARGET_DIR"
+          git commit -m "chore(www): sync frontend build"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
