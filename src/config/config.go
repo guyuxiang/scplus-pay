@@ -47,6 +47,7 @@ func Init() {
 	configRootPath = filepath.Dir(configPath)
 
 	viper.SetConfigFile(configPath)
+	viper.AutomaticEnv()
 	err = viper.ReadInConfig()
 	if err != nil {
 		panic(err)
