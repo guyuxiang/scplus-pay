@@ -54,6 +54,34 @@ var startCmd = &cobra.Command{
 	},
 }
 
+func resolveWwwRoot() string {
+	wwwRoot := "./www"
+	if exePath, err := os.Executable(); err == nil {
+		if exePath, err = filepath.EvalSymlinks(exePath); err == nil {
+			wwwRoot = filepath.Join(filepath.Dir(exePath), "www")
+		}
+	}
+	return wwwRoot
+}
+
+// spaIndexWithBasePath reads index.html and patches it for serving under a
+// subpath: injects <base href="$basePath/"> and converts absolute asset paths
+// to relative so the browser resolves them via the base href.
+func spaIndexWithBasePath(wwwRoot, basePath string) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		raw, err := os.ReadFile(filepath.Join(wwwRoot, "index.html"))
+		if err != nil {
+			return echo.ErrNotFound
+		}
+		html := strings.Replace(string(raw), "<head>",
+			`<head><base href="`+basePath+`/">`, 1)
+		for _, attr := range []string{"src", "href", "content"} {
+			html = strings.ReplaceAll(html, attr+`="/`, attr+`="`)
+		}
+		return c.HTMLBlob(http.StatusOK, []byte(html))
+	}
+}
+
 func HttpServerStart() {
 	var err error
 	e := echo.New()
@@ -66,18 +94,36 @@ func HttpServerStart() {
 
 	// Resolve www/ relative to the executable so SPA routes work regardless
 	// of the working directory. main.go extracts www/ next to the binary.
-	wwwRoot := "./www"
-	if exePath, err := os.Executable(); err == nil {
-		if exePath, err = filepath.EvalSymlinks(exePath); err == nil {
-			wwwRoot = filepath.Join(filepath.Dir(exePath), "www")
-		}
+	wwwRoot := resolveWwwRoot()
+
+	// If a base path is configured, serve the SPA and its assets under that
+	// prefix so the app is reachable at e.g. /crypto-payment-gateway/admin.
+	// API routes stay at their original paths because the SPA constructs API
+	// URLs from window.location.origin (no path prefix).
+	if bp := config.BasePath; bp != "" {
+		indexHandler := spaIndexWithBasePath(wwwRoot, bp)
+		bg := e.Group(bp)
+		bg.GET("", indexHandler)
+		bg.GET("/", indexHandler)
+		bg.GET("/*", func(c echo.Context) error {
+			sub := c.Param("*")
+			fpath := filepath.Join(wwwRoot, filepath.FromSlash(sub))
+			if info, statErr := os.Stat(fpath); statErr == nil && !info.IsDir() {
+				return c.File(fpath)
+			}
+			return indexHandler(c)
+		})
 	}
+
 	e.Use(echoMiddleware.StaticWithConfig(echoMiddleware.StaticConfig{
 		Skipper: func(c echo.Context) bool {
 			path := c.Request().URL.Path
 			if path == "/install" || strings.HasPrefix(path, "/install/") {
 				// The install wizard is only served by install.RunInstallServer
 				// before bootstrap. Once main server starts, block /install.
+				return true
+			}
+			if bp := config.BasePath; bp != "" && (path == bp || strings.HasPrefix(path, bp+"/")) {
 				return true
 			}
 			return luluHttp.ShouldSkipSPAFallback(path)

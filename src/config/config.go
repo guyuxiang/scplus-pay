@@ -25,6 +25,7 @@ var (
 	LogSavePath        string
 	StaticPath         string
 	StaticFilePath     string
+	BasePath           string
 	TgBotToken         string
 	TgProxy            string
 	TgManage           int64
@@ -69,9 +70,21 @@ func Init() {
 		url.QueryEscape(viper.GetString("mysql_passwd")),
 		fmt.Sprintf("%s:%s", viper.GetString("mysql_host"), viper.GetString("mysql_port")),
 		viper.GetString("mysql_database"))
+	BasePath = normalizeBasePath(viper.GetString("base_path"))
 	TgBotToken = viper.GetString("tg_bot_token")
 	TgProxy = viper.GetString("tg_proxy")
 	TgManage = viper.GetInt64("tg_manage")
+}
+
+func normalizeBasePath(path string) string {
+	path = strings.TrimSpace(path)
+	if path == "" || path == "/" {
+		return ""
+	}
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+	return strings.TrimRight(path, "/")
 }
 
 func mustMkdir(path string) {
