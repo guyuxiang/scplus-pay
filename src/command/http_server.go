@@ -64,19 +64,18 @@ func resolveWwwRoot() string {
 	return wwwRoot
 }
 
-// spaIndexWithBasePath reads index.html and patches it for serving under a
-// subpath: injects <base href="$basePath/"> and converts absolute asset paths
-// to relative so the browser resolves them via the base href.
+// spaIndexWithBasePath reads index.html and rewrites all absolute asset paths
+// (src="/…", href="/…") to include the base path prefix so the browser
+// requests them at the correct sub-path location.
 func spaIndexWithBasePath(wwwRoot, basePath string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		raw, err := os.ReadFile(filepath.Join(wwwRoot, "index.html"))
 		if err != nil {
 			return echo.ErrNotFound
 		}
-		html := strings.Replace(string(raw), "<head>",
-			`<head><base href="`+basePath+`/">`, 1)
+		html := string(raw)
 		for _, attr := range []string{"src", "href", "content"} {
-			html = strings.ReplaceAll(html, attr+`="/`, attr+`="`)
+			html = strings.ReplaceAll(html, attr+`="/`, attr+`="`+basePath+`/`)
 		}
 		return c.HTMLBlob(http.StatusOK, []byte(html))
 	}
