@@ -36,7 +36,7 @@ import (
 
 // DefaultInstallAddr is the listen address used by the install API.
 // Matches the default http_listen so no extra port is needed.
-const DefaultInstallAddr = ":8000"
+const DefaultInstallAddr = ":80"
 
 // InstallRequest is the payload submitted by the install form.
 // All fields are optional except AppURI; omitted fields fall back to InstallDefaults().
@@ -47,8 +47,8 @@ type InstallRequest struct {
 	AppURI string `json:"app_uri" form:"app_uri" example:"https://pay.example.com"`
 	// Bind address for the HTTP server (default: 127.0.0.1)
 	HttpBindAddr string `json:"http_bind_addr" form:"http_bind_addr" example:"127.0.0.1"`
-	// Bind port for the HTTP server (default: 8000)
-	HttpBindPort int `json:"http_bind_port" form:"http_bind_port" example:"8000"`
+	// Bind port for the HTTP server (default: 80)
+	HttpBindPort int `json:"http_bind_port" form:"http_bind_port" example:"80"`
 	// Runtime directory for SQLite DB and temp files (default: ./runtime)
 	RuntimeRootPath string `json:"runtime_root_path" form:"runtime_root_path" example:"./runtime"`
 	// Directory for application log files (default: ./logs)
@@ -65,7 +65,7 @@ func InstallDefaults() InstallRequest {
 		AppName:             "scplus-pay",
 		AppURI:              "",
 		HttpBindAddr:        "127.0.0.1",
-		HttpBindPort:        8000,
+		HttpBindPort:        80,
 		RuntimeRootPath:     "./runtime",
 		LogSavePath:         "./logs",
 		OrderExpirationTime: 10,

@@ -21,8 +21,8 @@ func TestInstallDefaults(t *testing.T) {
 	if d.HttpBindAddr != "127.0.0.1" {
 		t.Errorf("HttpBindAddr = %q, want 127.0.0.1", d.HttpBindAddr)
 	}
-	if d.HttpBindPort != 8000 {
-		t.Errorf("HttpBindPort = %d, want 8000", d.HttpBindPort)
+	if d.HttpBindPort != 80 {
+		t.Errorf("HttpBindPort = %d, want 80", d.HttpBindPort)
 	}
 	if d.OrderExpirationTime != 10 {
 		t.Errorf("OrderExpirationTime = %d, want 10", d.OrderExpirationTime)
@@ -90,8 +90,8 @@ func TestInstallAPIDefaults(t *testing.T) {
 	if body["http_bind_addr"] != "127.0.0.1" {
 		t.Errorf("http_bind_addr = %v, want 127.0.0.1", body["http_bind_addr"])
 	}
-	if body["http_bind_port"] != float64(8000) {
-		t.Errorf("http_bind_port = %v, want 8000", body["http_bind_port"])
+	if body["http_bind_port"] != float64(80) {
+		t.Errorf("http_bind_port = %v, want 80", body["http_bind_port"])
 	}
 }
 
